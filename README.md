@@ -75,4 +75,6 @@ Hardware used during preliminary testing was offered by research institutions IE
 This work could not have been done without the guidance of professors [Paulo Dias](https://github.com/pmdjdias) and [Miguel Oliveira](https://github.com/miguelriemoliveira).
 Special thanks to Marcelo Silva and the entire VR360 team.
 
+For further information, feel free to reach out.
+
 <img alt="VR360 Team 2021" src="https://github.com/FilipeLopesPires/HoloStudio/blob/main/img/team.png" width="100%"/>
