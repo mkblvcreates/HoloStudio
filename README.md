@@ -19,9 +19,9 @@ Calibration is done through a semi-automatic process, with key point manual sele
 Camera placement characteristics, including height, angle, orientation and distance, were all studied for results optimization.
 The final capture studio, with custom lighting conditions, is highly portable and replicable.
 
-<img alt="HoloStudio Capture Studio Image 1" src="https://github.com/FilipeLopesPires/HoloStudio/blob/main/img/multicam-sync-daisychain.png" width="49%"> <img alt="HoloStudio Capture Studio Image 2" src="https://github.com/FilipeLopesPires/HoloStudio/blob/main/img/multicam-placement.png" width="49%">
+<img alt="HoloStudio Multi-camera Synchronization Image 1" src="https://github.com/FilipeLopesPires/HoloStudio/blob/main/img/multicam-sync-daisychain.png" width="49%"> <img alt="HoloStudio Multi-camera Synchronization Image 2" src="https://github.com/FilipeLopesPires/HoloStudio/blob/main/img/multicam-placement.png" width="49%">
 
-<img alt="HoloStudio Capture Studio Image 1" src="https://github.com/FilipeLopesPires/HoloStudio/blob/main/img/studio-1.png" width="49%"> <img alt="HoloStudio Capture Studio Image 2" src="https://github.com/FilipeLopesPires/HoloStudio/blob/main/img/studio-1.png" width="49%">
+<img alt="HoloStudio Capture Studio Image 1" src="https://github.com/FilipeLopesPires/HoloStudio/blob/main/img/studio-1.png" width="49%"> <img alt="HoloStudio Capture Studio Image 2" src="https://github.com/FilipeLopesPires/HoloStudio/blob/main/img/studio-2.png" width="49%">
 
 ## Processing & Visualization
 
