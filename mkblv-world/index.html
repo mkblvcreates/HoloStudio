@@ -6,1202 +6,978 @@
   <title>MKBLV.WORLD — NFC Tools</title>
   <style>
     :root {
-      --bg: #0a0a0f;
-      --bg-card: #13131a;
-      --bg-card-hover: #1a1a24;
-      --border: #2a2a3a;
-      --border-active: #6c5ce7;
-      --text: #e8e8f0;
-      --text-muted: #8888a0;
-      --accent: #6c5ce7;
-      --accent-glow: rgba(108, 92, 231, 0.3);
-      --success: #00d68f;
-      --success-bg: rgba(0, 214, 143, 0.1);
-      --warning: #ffaa00;
-      --warning-bg: rgba(255, 170, 0, 0.1);
-      --error: #ff5a5a;
-      --error-bg: rgba(255, 90, 90, 0.1);
-      --radius: 12px;
-      --radius-sm: 8px;
+      --ground: #F4F1EC;
+      --surface: #FFFFFF;
+      --surface-raised: #EBE8E2;
+      --ink: #1C1E2A;
+      --ink-muted: #7A7D8A;
+      --border: #D5D1C9;
+      --signal: #0891B2;
+      --signal-dim: #067A97;
+      --signal-glow: rgba(8, 145, 178, 0.18);
+      --confirm: #059669;
+      --confirm-bg: rgba(5, 150, 105, 0.08);
+      --caution: #B45309;
+      --caution-bg: rgba(180, 83, 9, 0.08);
+      --fault: #DC2626;
+      --fault-bg: rgba(220, 38, 38, 0.08);
+      --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+      --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --radius: 10px;
+      --radius-sm: 6px;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --ground: #0F1318;
+        --surface: #181D26;
+        --surface-raised: #1F2635;
+        --ink: #DFE1E8;
+        --ink-muted: #6B6F82;
+        --border: #252D3A;
+        --signal-glow: rgba(8, 145, 178, 0.25);
+        --confirm-bg: rgba(5, 150, 105, 0.12);
+        --caution-bg: rgba(180, 83, 9, 0.12);
+        --fault-bg: rgba(220, 38, 38, 0.12);
+      }
     }
+    :root[data-theme="dark"] {
+      --ground: #0F1318;
+      --surface: #181D26;
+      --surface-raised: #1F2635;
+      --ink: #DFE1E8;
+      --ink-muted: #6B6F82;
+      --border: #252D3A;
+      --signal-glow: rgba(8, 145, 178, 0.25);
+      --confirm-bg: rgba(5, 150, 105, 0.12);
+      --caution-bg: rgba(180, 83, 9, 0.12);
+      --fault-bg: rgba(220, 38, 38, 0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--ground);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.5;
       min-height: 100vh;
-      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .grain {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0.03;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      z-index: 9999;
+    .shell {
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 0 20px;
     }
 
-    header {
-      padding: 1.5rem 1.5rem 0;
+    .brand {
+      padding: 28px 0 4px;
       text-align: center;
     }
-
-    .logo {
-      font-size: 1.1rem;
+    .brand-name {
+      font-family: var(--mono);
+      font-size: 15px;
       font-weight: 700;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--text);
-      margin-bottom: 0.25rem;
+      letter-spacing: 0.02em;
+      color: var(--ink);
     }
-
-    .logo span {
-      color: var(--accent);
+    .brand-name b {
+      color: var(--signal);
+      font-weight: 700;
     }
-
-    .tagline {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      letter-spacing: 0.15em;
+    .brand-sub {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      letter-spacing: 0.18em;
       text-transform: uppercase;
+      margin-top: 2px;
     }
 
     .tabs {
       display: flex;
       gap: 0;
-      margin: 1.5rem 1.5rem 0;
       border-bottom: 1px solid var(--border);
+      margin-top: 20px;
     }
-
     .tab {
       flex: 1;
-      padding: 0.75rem 1rem;
+      padding: 10px 0;
       background: none;
       border: none;
-      color: var(--text-muted);
-      font-size: 0.85rem;
+      font-family: var(--mono);
+      font-size: 11px;
       font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
       cursor: pointer;
       position: relative;
-      transition: color 0.2s;
-      letter-spacing: 0.05em;
+      transition: color 0.15s;
     }
-
-    .tab:hover {
-      color: var(--text);
-    }
-
-    .tab.active {
-      color: var(--accent);
-    }
-
-    .tab.active::after {
+    .tab:hover { color: var(--ink); }
+    .tab.on { color: var(--signal); }
+    .tab.on::after {
       content: '';
       position: absolute;
       bottom: -1px;
-      left: 0;
-      right: 0;
+      left: 20%;
+      right: 20%;
       height: 2px;
-      background: var(--accent);
+      background: var(--signal);
       border-radius: 2px 2px 0 0;
     }
-
-    main {
-      padding: 1.5rem;
-      max-width: 600px;
-      margin: 0 auto;
+    .tab .ct {
+      font-size: 9px;
+      font-weight: 700;
+      background: var(--signal);
+      color: #fff;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-left: 4px;
+      vertical-align: 1px;
     }
 
-    .panel {
-      display: none;
+    .panel { display: none; padding-top: 24px; }
+    .panel.on { display: block; }
+
+    .field-vis {
+      display: flex;
+      justify-content: center;
+      padding: 12px 0 20px;
+    }
+    #fieldCanvas {
+      width: 160px;
+      height: 160px;
     }
 
-    .panel.active {
-      display: block;
+    .sbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.4;
+      margin-bottom: 16px;
     }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      margin-bottom: 1rem;
+    .sbar.info { background: var(--signal-glow); color: var(--signal); border: 1px solid rgba(8,145,178,0.15); }
+    .sbar.ok { background: var(--confirm-bg); color: var(--confirm); border: 1px solid rgba(5,150,105,0.15); }
+    .sbar.warn { background: var(--caution-bg); color: var(--caution); border: 1px solid rgba(180,83,9,0.15); }
+    .sbar.err { background: var(--fault-bg); color: var(--fault); border: 1px solid rgba(220,38,38,0.15); }
+    .sbar .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: currentColor; flex-shrink: 0;
     }
+    .sbar.pulse .dot { animation: blink 1.2s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
-    .card-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 1rem;
-    }
-
-    .scan-btn {
+    .btn-primary {
       width: 100%;
-      padding: 1rem;
-      background: var(--accent);
+      padding: 14px;
+      background: var(--signal);
       color: #fff;
       border: none;
       border-radius: var(--radius-sm);
-      font-size: 1rem;
+      font-family: var(--mono);
+      font-size: 13px;
       font-weight: 600;
+      letter-spacing: 0.04em;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background 0.15s, box-shadow 0.15s;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 8px;
     }
-
-    .scan-btn:hover {
-      filter: brightness(1.1);
-      box-shadow: 0 0 20px var(--accent-glow);
+    .btn-primary:hover:not(:disabled) {
+      background: var(--signal-dim);
+      box-shadow: 0 0 0 3px var(--signal-glow);
     }
-
-    .scan-btn:active {
-      transform: scale(0.98);
-    }
-
-    .scan-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      filter: none;
-      box-shadow: none;
-    }
-
-    .scan-btn.scanning {
+    .btn-primary:active:not(:disabled) { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary.scanning {
       background: transparent;
-      border: 2px solid var(--accent);
-      color: var(--accent);
-      animation: pulse-border 2s ease-in-out infinite;
+      border: 1.5px solid var(--signal);
+      color: var(--signal);
+      animation: scan-ring 2.5s ease-in-out infinite;
+    }
+    @keyframes scan-ring {
+      0%,100% { box-shadow: 0 0 0 0 var(--signal-glow); }
+      50% { box-shadow: 0 0 0 6px var(--signal-glow); }
     }
 
-    @keyframes pulse-border {
-      0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
-      50% { box-shadow: 0 0 20px 5px var(--accent-glow); }
-    }
-
-    .scan-btn.stop {
-      background: var(--error);
-    }
-
-    .status-bar {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-    }
-
-    .status-bar.info {
-      background: rgba(108, 92, 231, 0.1);
-      color: var(--accent);
-      border: 1px solid rgba(108, 92, 231, 0.2);
-    }
-
-    .status-bar.success {
-      background: var(--success-bg);
-      color: var(--success);
-      border: 1px solid rgba(0, 214, 143, 0.2);
-    }
-
-    .status-bar.warning {
-      background: var(--warning-bg);
-      color: var(--warning);
-      border: 1px solid rgba(255, 170, 0, 0.2);
-    }
-
-    .status-bar.error {
-      background: var(--error-bg);
-      color: var(--error);
-      border: 1px solid rgba(255, 90, 90, 0.2);
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-      flex-shrink: 0;
-    }
-
-    .status-bar.scanning .status-dot {
-      animation: blink 1s ease-in-out infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .record {
-      background: var(--bg-card);
+    .card {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      transition: border-color 0.2s;
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 16px;
     }
-
-    .record:hover {
-      border-color: var(--border-active);
-    }
-
-    .record-type {
-      display: inline-block;
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      background: rgba(108, 92, 231, 0.15);
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-    }
-
-    .record-data {
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 0.85rem;
-      color: var(--text);
-      word-break: break-all;
-      line-height: 1.5;
-    }
-
-    .record-data a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    .record-data a:hover {
-      text-decoration: underline;
-    }
-
-    .record-meta {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      margin-top: 0.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 0.75rem;
+    .card-label {
+      font-family: var(--mono);
+      font-size: 10px;
       font-weight: 600;
-      color: var(--text-muted);
+      color: var(--ink-muted);
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
+      margin-bottom: 14px;
     }
 
-    .form-select, .form-input, .form-textarea {
+    .fg { margin-bottom: 14px; }
+    .fg:last-child { margin-bottom: 0; }
+    .fl {
+      display: block;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .fi, .fs, .ft {
       width: 100%;
-      padding: 0.75rem 1rem;
-      background: var(--bg);
+      padding: 10px 12px;
+      background: var(--ground);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      color: var(--text);
-      font-size: 0.9rem;
-      font-family: inherit;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 14px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-
-    .form-select:focus, .form-input:focus, .form-textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+    .fi:focus, .fs:focus, .ft:focus {
+      border-color: var(--signal);
+      box-shadow: 0 0 0 3px var(--signal-glow);
     }
-
-    .form-select {
+    .fi::placeholder, .ft::placeholder { color: var(--ink-muted); opacity: 0.6; }
+    .fs {
       cursor: pointer;
       -webkit-appearance: none;
       appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238888a0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%236B6F82' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 1rem center;
-      padding-right: 2.5rem;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+    .ft { min-height: 90px; resize: vertical; font-family: var(--sans); }
+
+    .wf { display: none; }
+    .wf.on { display: block; }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .grid2 .span { grid-column: 1 / -1; }
+
+    .rec {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 10px;
+      transition: border-color 0.15s;
+    }
+    .rec:hover { border-color: var(--signal); }
+    .rec-type {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 3px;
+      background: var(--signal-glow);
+      color: var(--signal);
+      margin-bottom: 8px;
+    }
+    .rec-data {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--ink);
+      word-break: break-all;
+      line-height: 1.55;
+    }
+    .rec-data a { color: var(--signal); text-decoration: none; }
+    .rec-data a:hover { text-decoration: underline; }
+    .rec-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-muted);
+      margin-top: 6px;
     }
 
-    .form-textarea {
-      min-height: 100px;
-      resize: vertical;
+    .tag-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .tag-cell {
+      padding: 8px 10px;
+      background: var(--ground);
+      border-radius: var(--radius-sm);
+    }
+    .tag-cell-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--ink-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .tag-cell-value {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--ink);
+      margin-top: 2px;
     }
 
-    .write-fields {
-      display: none;
-    }
-
-    .write-fields.active {
-      display: block;
-    }
-
-    .history-item {
+    .log-head {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .btn-ghost {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--ink-muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      padding: 5px 10px;
       border-radius: var(--radius-sm);
-      transition: background 0.2s;
       cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
     }
+    .btn-ghost:hover { border-color: var(--fault); color: var(--fault); }
 
-    .history-item:hover {
-      background: var(--bg-card-hover);
+    .log-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.12s;
     }
-
-    .history-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
+    .log-row:hover { background: var(--surface-raised); }
+    .log-pip {
+      width: 30px; height: 30px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      font-size: 0.7rem;
+      font-family: var(--mono);
+      font-size: 10px;
       font-weight: 700;
-      text-transform: uppercase;
     }
-
-    .history-icon.read {
-      background: rgba(0, 214, 143, 0.15);
-      color: var(--success);
-    }
-
-    .history-icon.write {
-      background: rgba(108, 92, 231, 0.15);
-      color: var(--accent);
-    }
-
-    .history-details {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .history-title {
-      font-size: 0.85rem;
+    .log-pip.r { background: rgba(5,150,105,0.12); color: var(--confirm); }
+    .log-pip.w { background: var(--signal-glow); color: var(--signal); }
+    .log-body { flex: 1; min-width: 0; }
+    .log-title {
+      font-size: 13px;
       font-weight: 500;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
-    .history-time {
-      font-size: 0.7rem;
-      color: var(--text-muted);
+    .log-time {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-muted);
     }
 
-    .empty-state {
+    .empty {
       text-align: center;
-      padding: 3rem 1rem;
-      color: var(--text-muted);
+      padding: 48px 16px;
+      color: var(--ink-muted);
     }
+    .empty svg { opacity: 0.25; margin-bottom: 12px; }
+    .empty p { font-size: 13px; }
 
-    .empty-state svg {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 1rem;
-      opacity: 0.3;
-    }
-
-    .empty-state p {
-      font-size: 0.85rem;
-    }
-
-    .nfc-visual {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    .nfc-ring {
-      width: 120px;
-      height: 120px;
-      border: 2px solid var(--border);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .nfc-ring.active {
-      border-color: var(--accent);
-      animation: ring-pulse 2s ease-in-out infinite;
-    }
-
-    .nfc-ring.success {
-      border-color: var(--success);
-    }
-
-    @keyframes ring-pulse {
-      0%, 100% {
-        box-shadow: 0 0 0 0 var(--accent-glow),
-                    0 0 0 0 var(--accent-glow);
-      }
-      50% {
-        box-shadow: 0 0 0 15px transparent,
-                    0 0 20px 5px var(--accent-glow);
-      }
-    }
-
-    .nfc-icon {
-      color: var(--text-muted);
-      transition: color 0.3s;
-    }
-
-    .nfc-ring.active .nfc-icon {
-      color: var(--accent);
-    }
-
-    .nfc-ring.success .nfc-icon {
-      color: var(--success);
-    }
-
-    .unsupported-banner {
-      background: var(--warning-bg);
-      border: 1px solid rgba(255, 170, 0, 0.3);
+    .compat {
+      background: var(--caution-bg);
+      border: 1px solid rgba(180,83,9,0.2);
       border-radius: var(--radius);
-      padding: 1.25rem;
-      margin-bottom: 1rem;
+      padding: 16px;
+      margin-bottom: 16px;
     }
-
-    .unsupported-banner h3 {
-      font-size: 0.85rem;
-      color: var(--warning);
-      margin-bottom: 0.5rem;
-    }
-
-    .unsupported-banner p {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    .tag-info {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-    }
-
-    .tag-info-item {
-      padding: 0.5rem 0.75rem;
-      background: var(--bg);
-      border-radius: var(--radius-sm);
-    }
-
-    .tag-info-label {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .tag-info-value {
-      font-size: 0.85rem;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      color: var(--text);
-      margin-top: 0.15rem;
-    }
-
-    .clear-btn {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .clear-btn:hover {
-      border-color: var(--error);
-      color: var(--error);
-    }
-
-    .flex-between {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .badge {
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.6rem;
+    .compat h3 {
+      font-family: var(--mono);
+      font-size: 12px;
       font-weight: 700;
-      padding: 0.15rem 0.4rem;
-      border-radius: 4px;
-      margin-left: 0.5rem;
+      color: var(--caution);
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+    .compat p {
+      font-size: 13px;
+      color: var(--ink-muted);
+      line-height: 1.55;
     }
 
-    .vcard-fields {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-
-    .vcard-fields .form-group {
-      margin-bottom: 0;
-    }
-
-    .vcard-fields .full-width {
-      grid-column: 1 / -1;
-    }
-
-    footer {
+    .foot {
       text-align: center;
-      padding: 2rem 1.5rem;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
+      padding: 32px 0;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-muted);
+      letter-spacing: 0.04em;
     }
-
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
-    }
+    .foot a { color: var(--signal); text-decoration: none; }
   </style>
 </head>
 <body>
-  <div class="grain"></div>
-
-  <header>
-    <div class="logo">MKBLV<span>.</span>WORLD</div>
-    <div class="tagline">NFC Tools</div>
-  </header>
-
-  <div class="tabs">
-    <button class="tab active" data-tab="read">Read</button>
-    <button class="tab" data-tab="write">Write</button>
-    <button class="tab" data-tab="history">History<span class="badge" id="historyBadge" style="display:none">0</span></button>
-  </div>
-
-  <main>
-    <div id="unsupportedBanner" class="unsupported-banner" style="display:none">
-      <h3>Web NFC Not Available</h3>
-      <p>Web NFC requires Chrome 89+ on an Android device with NFC hardware. Make sure NFC is enabled in your device settings and you're accessing this page over HTTPS.</p>
+  <div class="shell">
+    <div class="brand">
+      <div class="brand-name">MKBLV<b>.</b>WORLD</div>
+      <div class="brand-sub">NFC Tools</div>
     </div>
 
-    <!-- READ PANEL -->
-    <div class="panel active" id="panelRead">
-      <div class="nfc-visual">
-        <div class="nfc-ring" id="readRing">
-          <svg class="nfc-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/>
-            <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/>
-            <path d="M12.91 4.1a16.07 16.07 0 0 1 0 15.8"/>
-            <path d="M16.37 2a20.4 20.4 0 0 1 0 20"/>
-          </svg>
-        </div>
-      </div>
+    <div class="tabs">
+      <button class="tab on" data-t="read">Read</button>
+      <button class="tab" data-t="write">Write</button>
+      <button class="tab" data-t="log">Log<span class="ct" id="logCt" style="display:none">0</span></button>
+    </div>
 
-      <div id="readStatus" class="status-bar info" style="display:none">
-        <div class="status-dot"></div>
-        <span id="readStatusText"></span>
-      </div>
+    <div id="compatBanner" class="compat" style="display:none">
+      <h3>Web NFC unavailable</h3>
+      <p>Requires Chrome 89+ on Android with NFC enabled, served over HTTPS. Desktop browsers and iOS do not support Web NFC.</p>
+    </div>
 
-      <button class="scan-btn" id="scanBtn" onclick="toggleScan()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/>
-          <path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/>
-          <path d="M12.91 4.1a16.07 16.07 0 0 1 0 15.8"/>
-          <path d="M16.37 2a20.4 20.4 0 0 1 0 20"/>
-        </svg>
-        Start Scanning
+    <div class="panel on" id="pRead">
+      <div class="field-vis">
+        <canvas id="fieldCanvas" width="320" height="320"></canvas>
+      </div>
+      <div id="rStatus" class="sbar info" style="display:none">
+        <span class="dot"></span><span id="rStatusTxt"></span>
+      </div>
+      <button class="btn-primary" id="scanBtn" onclick="toggleScan()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/><path d="M12.91 4.1a16.07 16.07 0 0 1 0 15.8"/><path d="M16.37 2a20.4 20.4 0 0 1 0 20"/></svg>
+        Scan
       </button>
-
-      <div id="readResults" style="margin-top:1rem"></div>
+      <div id="readOut" style="margin-top:16px"></div>
     </div>
 
-    <!-- WRITE PANEL -->
-    <div class="panel" id="panelWrite">
+    <div class="panel" id="pWrite">
       <div class="card">
-        <div class="card-title">Record Type</div>
-        <div class="form-group">
-          <select class="form-select" id="writeType" onchange="onWriteTypeChange()">
+        <div class="card-label">Record type</div>
+        <div class="fg">
+          <select class="fs" id="wType" onchange="switchWriteType()">
             <option value="text">Plain Text</option>
-            <option value="url">URL / Link</option>
+            <option value="url">URL</option>
             <option value="wifi">Wi-Fi Network</option>
-            <option value="vcard">Contact (vCard)</option>
+            <option value="vcard">Contact Card</option>
             <option value="phone">Phone Number</option>
-            <option value="email">Email Address</option>
+            <option value="email">Email</option>
             <option value="geo">Location</option>
           </select>
         </div>
 
-        <!-- Text fields -->
-        <div class="write-fields active" id="fieldsText">
-          <div class="form-group">
-            <label class="form-label">Text Content</label>
-            <textarea class="form-textarea" id="writeTextContent" placeholder="Enter text to write to NFC tag..."></textarea>
+        <div class="wf on" id="fText">
+          <div class="fg">
+            <label class="fl">Content</label>
+            <textarea class="ft" id="wText" placeholder="Text to encode on the tag"></textarea>
           </div>
         </div>
 
-        <!-- URL fields -->
-        <div class="write-fields" id="fieldsUrl">
-          <div class="form-group">
-            <label class="form-label">URL</label>
-            <input class="form-input" id="writeUrl" type="url" placeholder="https://example.com">
+        <div class="wf" id="fUrl">
+          <div class="fg">
+            <label class="fl">URL</label>
+            <input class="fi" id="wUrl" type="url" placeholder="https://mkblv.world">
           </div>
         </div>
 
-        <!-- WiFi fields -->
-        <div class="write-fields" id="fieldsWifi">
-          <div class="form-group">
-            <label class="form-label">Network Name (SSID)</label>
-            <input class="form-input" id="wifiSsid" type="text" placeholder="MyNetwork">
+        <div class="wf" id="fWifi">
+          <div class="fg">
+            <label class="fl">SSID</label>
+            <input class="fi" id="wSsid" placeholder="Network name">
           </div>
-          <div class="form-group">
-            <label class="form-label">Password</label>
-            <input class="form-input" id="wifiPassword" type="text" placeholder="password123">
+          <div class="fg">
+            <label class="fl">Password</label>
+            <input class="fi" id="wPass" type="text" placeholder="Network password">
           </div>
-          <div class="form-group">
-            <label class="form-label">Security</label>
-            <select class="form-select" id="wifiSecurity">
-              <option value="WPA">WPA/WPA2</option>
+          <div class="fg">
+            <label class="fl">Security</label>
+            <select class="fs" id="wSec">
+              <option value="WPA">WPA / WPA2</option>
               <option value="WEP">WEP</option>
-              <option value="">Open (No Password)</option>
+              <option value="">Open</option>
             </select>
           </div>
         </div>
 
-        <!-- vCard fields -->
-        <div class="write-fields" id="fieldsVcard">
-          <div class="vcard-fields">
-            <div class="form-group">
-              <label class="form-label">First Name</label>
-              <input class="form-input" id="vcardFirst" type="text" placeholder="John">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Last Name</label>
-              <input class="form-input" id="vcardLast" type="text" placeholder="Doe">
-            </div>
-            <div class="form-group full-width">
-              <label class="form-label">Phone</label>
-              <input class="form-input" id="vcardPhone" type="tel" placeholder="+1 555 123 4567">
-            </div>
-            <div class="form-group full-width">
-              <label class="form-label">Email</label>
-              <input class="form-input" id="vcardEmail" type="email" placeholder="john@example.com">
-            </div>
-            <div class="form-group full-width">
-              <label class="form-label">Organization</label>
-              <input class="form-input" id="vcardOrg" type="text" placeholder="Acme Inc.">
-            </div>
-            <div class="form-group full-width">
-              <label class="form-label">Website</label>
-              <input class="form-input" id="vcardUrl" type="url" placeholder="https://example.com">
-            </div>
+        <div class="wf" id="fVcard">
+          <div class="grid2">
+            <div class="fg"><label class="fl">First name</label><input class="fi" id="vcF" placeholder="Jane"></div>
+            <div class="fg"><label class="fl">Last name</label><input class="fi" id="vcL" placeholder="Doe"></div>
+            <div class="fg span"><label class="fl">Phone</label><input class="fi" id="vcP" type="tel" placeholder="+1 555 000 0000"></div>
+            <div class="fg span"><label class="fl">Email</label><input class="fi" id="vcE" type="email" placeholder="jane@example.com"></div>
+            <div class="fg span"><label class="fl">Organization</label><input class="fi" id="vcO" placeholder="Acme Inc."></div>
+            <div class="fg span"><label class="fl">Website</label><input class="fi" id="vcU" type="url" placeholder="https://example.com"></div>
           </div>
         </div>
 
-        <!-- Phone fields -->
-        <div class="write-fields" id="fieldsPhone">
-          <div class="form-group">
-            <label class="form-label">Phone Number</label>
-            <input class="form-input" id="writePhone" type="tel" placeholder="+1 555 123 4567">
+        <div class="wf" id="fPhone">
+          <div class="fg">
+            <label class="fl">Phone number</label>
+            <input class="fi" id="wPhone" type="tel" placeholder="+1 555 000 0000">
           </div>
         </div>
 
-        <!-- Email fields -->
-        <div class="write-fields" id="fieldsEmail">
-          <div class="form-group">
-            <label class="form-label">Email Address</label>
-            <input class="form-input" id="writeEmail" type="email" placeholder="hello@example.com">
+        <div class="wf" id="fEmail">
+          <div class="fg">
+            <label class="fl">Email address</label>
+            <input class="fi" id="wEmail" type="email" placeholder="hello@example.com">
           </div>
-          <div class="form-group">
-            <label class="form-label">Subject (optional)</label>
-            <input class="form-input" id="writeEmailSubject" type="text" placeholder="Hello!">
+          <div class="fg">
+            <label class="fl">Subject (optional)</label>
+            <input class="fi" id="wSubj" placeholder="Hello from an NFC tag">
           </div>
         </div>
 
-        <!-- Geo fields -->
-        <div class="write-fields" id="fieldsGeo">
-          <div class="vcard-fields">
-            <div class="form-group">
-              <label class="form-label">Latitude</label>
-              <input class="form-input" id="geoLat" type="number" step="any" placeholder="40.7128">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Longitude</label>
-              <input class="form-input" id="geoLng" type="number" step="any" placeholder="-74.0060">
-            </div>
+        <div class="wf" id="fGeo">
+          <div class="grid2">
+            <div class="fg"><label class="fl">Latitude</label><input class="fi" id="gLat" type="number" step="any" placeholder="40.7128"></div>
+            <div class="fg"><label class="fl">Longitude</label><input class="fi" id="gLng" type="number" step="any" placeholder="-74.0060"></div>
           </div>
         </div>
       </div>
 
-      <div id="writeStatus" class="status-bar info" style="display:none">
-        <div class="status-dot"></div>
-        <span id="writeStatusText"></span>
+      <div id="wStatus" class="sbar info" style="display:none">
+        <span class="dot"></span><span id="wStatusTxt"></span>
       </div>
 
-      <button class="scan-btn" id="writeBtn" onclick="writeTag()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 5v14M5 12h14"/>
-        </svg>
-        Write to NFC Tag
+      <button class="btn-primary" id="writeBtn" onclick="writeTag()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Write to Tag
       </button>
     </div>
 
-    <!-- HISTORY PANEL -->
-    <div class="panel" id="panelHistory">
-      <div class="flex-between" style="margin-bottom:1rem">
-        <div class="card-title" style="margin:0">Activity Log</div>
-        <button class="clear-btn" onclick="clearHistory()">Clear All</button>
+    <div class="panel" id="pLog">
+      <div class="log-head">
+        <div class="card-label" style="margin:0">Activity</div>
+        <button class="btn-ghost" onclick="clearLog()">Clear</button>
       </div>
-      <div id="historyList">
-        <div class="empty-state">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-          </svg>
-          <p>No activity yet. Read or write an NFC tag to get started.</p>
+      <div id="logList">
+        <div class="empty">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <p>No activity yet</p>
         </div>
       </div>
     </div>
-  </main>
 
-  <footer>
-    MKBLV.WORLD &mdash; NFC Tools<br>
-    Web NFC requires <a href="https://caniuse.com/webnfc" target="_blank" rel="noopener">Chrome 89+ on Android</a>
-  </footer>
+    <div class="foot">
+      MKBLV.WORLD &middot; Web NFC requires <a href="https://caniuse.com/webnfc" target="_blank" rel="noopener">Chrome 89+ on Android</a>
+    </div>
+  </div>
 
   <script>
-    let scanning = false;
-    let abortController = null;
-    let history = [];
+    let scanning = false, ac = null, hist = [];
+    try { hist = JSON.parse(localStorage.getItem('mkblv_nfc') || '[]'); } catch(_){}
 
-    try {
-      history = JSON.parse(localStorage.getItem('mkblv_nfc_history') || '[]');
-    } catch (_) {}
+    const cv = document.getElementById('fieldCanvas');
+    const ctx = cv.getContext('2d');
+    let fieldState = 'idle';
+    let hitTimer = 0;
+    let frameId;
 
-    function init() {
-      if (!('NDEFReader' in window)) {
-        document.getElementById('unsupportedBanner').style.display = 'block';
-        document.getElementById('scanBtn').disabled = true;
-        document.getElementById('writeBtn').disabled = true;
-      }
-      updateHistoryBadge();
-      renderHistory();
+    function getSignalColor() {
+      return getComputedStyle(document.documentElement).getPropertyValue('--signal').trim() || '#0891B2';
+    }
+    function getMutedColor() {
+      return getComputedStyle(document.documentElement).getPropertyValue('--ink-muted').trim() || '#6B6F82';
     }
 
-    // Tabs
+    function drawField(ts) {
+      const w = cv.width, h = cv.height;
+      const cx = w / 2, cy = h / 2;
+      ctx.clearRect(0, 0, w, h);
+
+      const sigCol = getSignalColor();
+      const mutCol = getMutedColor();
+      const t = ts / 1000;
+
+      if (fieldState === 'idle') {
+        for (let i = 0; i < 4; i++) {
+          const r = 30 + i * 22;
+          const startAngle = -Math.PI * 0.35 + i * 0.12;
+          const sweep = Math.PI * 0.7 - i * 0.08;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, startAngle, startAngle + sweep);
+          ctx.strokeStyle = mutCol;
+          ctx.globalAlpha = 0.18 - i * 0.03;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+        ctx.beginPath();
+        ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+        ctx.fillStyle = mutCol;
+        ctx.globalAlpha = 0.3;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+      } else if (fieldState === 'active') {
+        const numArcs = 5;
+        for (let i = 0; i < numArcs; i++) {
+          const phase = (t * 0.6 + i / numArcs) % 1;
+          const r = 20 + phase * 120;
+          const alpha = (1 - phase) * 0.5;
+          const angleOff = Math.sin(t * 0.3 + i * 1.7) * 0.2;
+          const sweep = Math.PI * (0.5 + 0.2 * Math.sin(i * 2.1));
+          const start = -Math.PI / 2 - sweep / 2 + angleOff;
+
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, start, start + sweep);
+          ctx.strokeStyle = sigCol;
+          ctx.globalAlpha = alpha;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+
+          const mirrorStart = Math.PI / 2 - sweep / 2 - angleOff;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, mirrorStart, mirrorStart + sweep);
+          ctx.strokeStyle = sigCol;
+          ctx.globalAlpha = alpha * 0.7;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+
+        const pulseR = 4 + Math.sin(t * 3) * 1.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, pulseR, 0, Math.PI * 2);
+        ctx.fillStyle = sigCol;
+        ctx.fill();
+
+        const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 30);
+        grd.addColorStop(0, sigCol + '30');
+        grd.addColorStop(1, sigCol + '00');
+        ctx.beginPath();
+        ctx.arc(cx, cy, 30, 0, Math.PI * 2);
+        ctx.fillStyle = grd;
+        ctx.fill();
+
+      } else if (fieldState === 'hit') {
+        hitTimer += 16;
+        const p = Math.min(hitTimer / 600, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        const confirmCol = getComputedStyle(document.documentElement).getPropertyValue('--confirm').trim() || '#059669';
+
+        const ringR = 20 + ease * 100;
+        ctx.beginPath();
+        ctx.arc(cx, cy, ringR, 0, Math.PI * 2);
+        ctx.strokeStyle = confirmCol;
+        ctx.globalAlpha = (1 - ease) * 0.6;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+        ctx.fillStyle = confirmCol;
+        ctx.fill();
+
+        if (p >= 1) {
+          fieldState = scanning ? 'active' : 'idle';
+          hitTimer = 0;
+        }
+      }
+
+      frameId = requestAnimationFrame(drawField);
+    }
+    frameId = requestAnimationFrame(drawField);
+
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('panel' + capitalize(tab.dataset.tab)).classList.add('active');
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+        tab.classList.add('on');
+        const map = { read: 'pRead', write: 'pWrite', log: 'pLog' };
+        document.getElementById(map[tab.dataset.t]).classList.add('on');
       });
     });
 
-    function capitalize(s) {
-      return s.charAt(0).toUpperCase() + s.slice(1);
+    function switchWriteType() {
+      document.querySelectorAll('.wf').forEach(f => f.classList.remove('on'));
+      const map = { text:'fText', url:'fUrl', wifi:'fWifi', vcard:'fVcard', phone:'fPhone', email:'fEmail', geo:'fGeo' };
+      document.getElementById(map[document.getElementById('wType').value]).classList.add('on');
     }
 
-    // Write type switcher
-    function onWriteTypeChange() {
-      document.querySelectorAll('.write-fields').forEach(f => f.classList.remove('active'));
-      const type = document.getElementById('writeType').value;
-      const map = {
-        text: 'fieldsText',
-        url: 'fieldsUrl',
-        wifi: 'fieldsWifi',
-        vcard: 'fieldsVcard',
-        phone: 'fieldsPhone',
-        email: 'fieldsEmail',
-        geo: 'fieldsGeo'
-      };
-      document.getElementById(map[type]).classList.add('active');
-    }
-
-    // Read
     async function toggleScan() {
-      if (scanning) {
-        stopScan();
-        return;
-      }
-
+      if (scanning) return stopScan();
       try {
         const reader = new NDEFReader();
-        abortController = new AbortController();
-
-        await reader.scan({ signal: abortController.signal });
+        ac = new AbortController();
+        await reader.scan({ signal: ac.signal });
 
         scanning = true;
+        fieldState = 'active';
         const btn = document.getElementById('scanBtn');
         btn.classList.add('scanning');
-        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="2"/></svg> Stop Scanning';
+        btn.innerHTML = svgStop() + ' Scanning…';
 
-        const ring = document.getElementById('readRing');
-        ring.classList.add('active');
-
-        showReadStatus('Waiting for NFC tag... Hold your device near a tag.', 'info', true);
+        showStatus('r', 'Hold device near an NFC tag', 'info', true);
 
         reader.addEventListener('reading', ({ serialNumber, message }) => {
-          ring.classList.remove('active');
-          ring.classList.add('success');
-          setTimeout(() => {
-            ring.classList.remove('success');
-            if (scanning) ring.classList.add('active');
-          }, 2000);
-
-          showReadStatus('Tag detected!', 'success');
-
-          const resultsEl = document.getElementById('readResults');
-          let html = '';
-
-          if (serialNumber && serialNumber !== '') {
-            html += `<div class="card"><div class="card-title">Tag Info</div>
-              <div class="tag-info">
-                <div class="tag-info-item">
-                  <div class="tag-info-label">Serial Number</div>
-                  <div class="tag-info-value">${escapeHtml(serialNumber)}</div>
-                </div>
-                <div class="tag-info-item">
-                  <div class="tag-info-label">Records</div>
-                  <div class="tag-info-value">${message.records.length}</div>
-                </div>
-              </div>
-            </div>`;
-          }
-
-          const recordSummaries = [];
-
-          for (const record of message.records) {
-            const { recordType, data, mediaType, encoding } = record;
-            let decoded = '';
-            let displayType = recordType;
-
-            if (recordType === 'text') {
-              const textDecoder = new TextDecoder(encoding || 'utf-8');
-              decoded = textDecoder.decode(data);
-              displayType = 'TEXT';
-            } else if (recordType === 'url') {
-              const textDecoder = new TextDecoder();
-              decoded = textDecoder.decode(data);
-              displayType = 'URL';
-            } else if (recordType === 'mime') {
-              displayType = mediaType || 'MIME';
-              if (mediaType && mediaType.startsWith('text/')) {
-                const textDecoder = new TextDecoder();
-                decoded = textDecoder.decode(data);
-              } else {
-                const bytes = new Uint8Array(data.buffer || data);
-                decoded = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
-              }
-            } else if (recordType === 'unknown') {
-              displayType = 'RAW';
-              const bytes = new Uint8Array(data.buffer || data);
-              decoded = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
-            } else {
-              displayType = recordType.toUpperCase();
-              try {
-                const textDecoder = new TextDecoder();
-                decoded = textDecoder.decode(data);
-              } catch(_) {
-                const bytes = new Uint8Array(data.buffer || data);
-                decoded = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
-              }
-            }
-
-            recordSummaries.push({ type: displayType, data: decoded });
-
-            let dataHtml = escapeHtml(decoded);
-            if (recordType === 'url' && decoded.startsWith('http')) {
-              dataHtml = `<a href="${escapeHtml(decoded)}" target="_blank" rel="noopener">${escapeHtml(decoded)}</a>`;
-            }
-
-            html += `<div class="record">
-              <div class="record-type">${escapeHtml(displayType)}</div>
-              <div class="record-data">${dataHtml}</div>
-              <div class="record-meta">${recordType}${mediaType ? ' · ' + escapeHtml(mediaType) : ''}</div>
-            </div>`;
-          }
-
-          resultsEl.innerHTML = html;
-
-          addHistory('read', serialNumber || 'unknown', recordSummaries);
+          fieldState = 'hit'; hitTimer = 0;
+          showStatus('r', 'Tag detected', 'ok');
+          renderReadResults(serialNumber, message);
+          addLog('read', serialNumber || '—', message);
         });
 
         reader.addEventListener('readingerror', () => {
-          showReadStatus('Error reading tag. Try again.', 'error');
+          showStatus('r', 'Could not read tag — try again', 'err');
         });
-
-      } catch (err) {
-        showReadStatus('Error: ' + err.message, 'error');
+      } catch (e) {
+        showStatus('r', e.message, 'err');
         stopScan();
       }
     }
 
     function stopScan() {
       scanning = false;
-      if (abortController) {
-        abortController.abort();
-        abortController = null;
-      }
+      fieldState = 'idle';
+      if (ac) { ac.abort(); ac = null; }
       const btn = document.getElementById('scanBtn');
       btn.classList.remove('scanning');
-      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/><path d="M12.91 4.1a16.07 16.07 0 0 1 0 15.8"/><path d="M16.37 2a20.4 20.4 0 0 1 0 20"/></svg> Start Scanning';
-
-      document.getElementById('readRing').classList.remove('active', 'success');
-
-      const statusEl = document.getElementById('readStatus');
-      statusEl.style.display = 'none';
+      btn.innerHTML = svgWave() + ' Scan';
+      document.getElementById('rStatus').style.display = 'none';
     }
 
-    function showReadStatus(msg, type, scanning_anim) {
-      const el = document.getElementById('readStatus');
-      const textEl = document.getElementById('readStatusText');
-      el.style.display = 'flex';
-      el.className = 'status-bar ' + type + (scanning_anim ? ' scanning' : '');
-      textEl.textContent = msg;
-    }
-
-    // Write
-    async function writeTag() {
-      const type = document.getElementById('writeType').value;
-      let records;
-      let summary;
-
-      try {
-        switch (type) {
-          case 'text': {
-            const text = document.getElementById('writeTextContent').value.trim();
-            if (!text) return showWriteStatus('Enter some text first.', 'warning');
-            records = [{ recordType: 'text', data: text }];
-            summary = text;
-            break;
-          }
-          case 'url': {
-            const url = document.getElementById('writeUrl').value.trim();
-            if (!url) return showWriteStatus('Enter a URL first.', 'warning');
-            records = [{ recordType: 'url', data: url }];
-            summary = url;
-            break;
-          }
-          case 'wifi': {
-            const ssid = document.getElementById('wifiSsid').value.trim();
-            const pass = document.getElementById('wifiPassword').value;
-            const sec = document.getElementById('wifiSecurity').value;
-            if (!ssid) return showWriteStatus('Enter a network name.', 'warning');
-            const wifiData = `WIFI:T:${sec};S:${ssid};P:${pass};;`;
-            records = [{ recordType: 'mime', mediaType: 'application/vnd.wfa.wsc', data: new TextEncoder().encode(wifiData) }];
-            summary = 'Wi-Fi: ' + ssid;
-            break;
-          }
-          case 'vcard': {
-            const first = document.getElementById('vcardFirst').value.trim();
-            const last = document.getElementById('vcardLast').value.trim();
-            const phone = document.getElementById('vcardPhone').value.trim();
-            const email = document.getElementById('vcardEmail').value.trim();
-            const org = document.getElementById('vcardOrg').value.trim();
-            const url = document.getElementById('vcardUrl').value.trim();
-            if (!first && !last) return showWriteStatus('Enter at least a name.', 'warning');
-            let vcard = 'BEGIN:VCARD\nVERSION:3.0\n';
-            vcard += `N:${last};${first};;;\n`;
-            vcard += `FN:${first} ${last}\n`;
-            if (phone) vcard += `TEL:${phone}\n`;
-            if (email) vcard += `EMAIL:${email}\n`;
-            if (org) vcard += `ORG:${org}\n`;
-            if (url) vcard += `URL:${url}\n`;
-            vcard += 'END:VCARD';
-            records = [{ recordType: 'mime', mediaType: 'text/vcard', data: new TextEncoder().encode(vcard) }];
-            summary = `${first} ${last}`.trim();
-            break;
-          }
-          case 'phone': {
-            const phone = document.getElementById('writePhone').value.trim();
-            if (!phone) return showWriteStatus('Enter a phone number.', 'warning');
-            records = [{ recordType: 'url', data: 'tel:' + phone }];
-            summary = phone;
-            break;
-          }
-          case 'email': {
-            const email = document.getElementById('writeEmail').value.trim();
-            const subject = document.getElementById('writeEmailSubject').value.trim();
-            if (!email) return showWriteStatus('Enter an email address.', 'warning');
-            let mailto = 'mailto:' + email;
-            if (subject) mailto += '?subject=' + encodeURIComponent(subject);
-            records = [{ recordType: 'url', data: mailto }];
-            summary = email;
-            break;
-          }
-          case 'geo': {
-            const lat = document.getElementById('geoLat').value;
-            const lng = document.getElementById('geoLng').value;
-            if (!lat || !lng) return showWriteStatus('Enter coordinates.', 'warning');
-            records = [{ recordType: 'url', data: `geo:${lat},${lng}` }];
-            summary = `${lat}, ${lng}`;
-            break;
-          }
+    function renderReadResults(serial, message) {
+      let html = '';
+      if (serial) {
+        html += '<div class="card"><div class="card-label">Tag</div><div class="tag-grid">' +
+          '<div class="tag-cell"><div class="tag-cell-label">Serial</div><div class="tag-cell-value">' + esc(serial) + '</div></div>' +
+          '<div class="tag-cell"><div class="tag-cell-label">Records</div><div class="tag-cell-value">' + message.records.length + '</div></div>' +
+          '</div></div>';
+      }
+      for (const r of message.records) {
+        const { recordType, data, mediaType, encoding } = r;
+        let decoded = '', displayType = recordType.toUpperCase();
+        if (recordType === 'text') {
+          decoded = new TextDecoder(encoding || 'utf-8').decode(data);
+          displayType = 'TEXT';
+        } else if (recordType === 'url') {
+          decoded = new TextDecoder().decode(data);
+          displayType = 'URL';
+        } else if (recordType === 'mime') {
+          displayType = (mediaType || 'MIME').toUpperCase();
+          decoded = mediaType && mediaType.startsWith('text/')
+            ? new TextDecoder().decode(data)
+            : hexDump(data);
+        } else {
+          try { decoded = new TextDecoder().decode(data); }
+          catch(_) { decoded = hexDump(data); }
         }
-      } catch (err) {
-        return showWriteStatus('Invalid input: ' + err.message, 'error');
+        let dataHtml = esc(decoded);
+        if (recordType === 'url' && /^https?:/.test(decoded))
+          dataHtml = '<a href="' + esc(decoded) + '" target="_blank" rel="noopener">' + esc(decoded) + '</a>';
+        html += '<div class="rec"><div class="rec-type">' + esc(displayType) + '</div>' +
+          '<div class="rec-data">' + dataHtml + '</div>' +
+          '<div class="rec-meta">' + recordType + (mediaType ? ' · ' + esc(mediaType) : '') + '</div></div>';
+      }
+      document.getElementById('readOut').innerHTML = html;
+    }
+
+    async function writeTag() {
+      const type = document.getElementById('wType').value;
+      let records, summary;
+      try {
+        const builders = {
+          text() {
+            const v = val('wText');
+            if (!v) throw 'Enter text';
+            return { records: [{ recordType: 'text', data: v }], summary: v };
+          },
+          url() {
+            const v = val('wUrl');
+            if (!v) throw 'Enter a URL';
+            return { records: [{ recordType: 'url', data: v }], summary: v };
+          },
+          wifi() {
+            const ssid = val('wSsid');
+            if (!ssid) throw 'Enter a network name';
+            const data = 'WIFI:T:' + val('wSec') + ';S:' + ssid + ';P:' + (document.getElementById('wPass').value) + ';;';
+            return { records: [{ recordType: 'mime', mediaType: 'application/vnd.wfa.wsc', data: enc(data) }], summary: 'Wi-Fi: ' + ssid };
+          },
+          vcard() {
+            const f = val('vcF'), l = val('vcL');
+            if (!f && !l) throw 'Enter a name';
+            let vc = 'BEGIN:VCARD\nVERSION:3.0\nN:' + l + ';' + f + ';;;\nFN:' + (f + ' ' + l).trim() + '\n';
+            const ph = val('vcP'); if (ph) vc += 'TEL:' + ph + '\n';
+            const em = val('vcE'); if (em) vc += 'EMAIL:' + em + '\n';
+            const org = val('vcO'); if (org) vc += 'ORG:' + org + '\n';
+            const url = val('vcU'); if (url) vc += 'URL:' + url + '\n';
+            vc += 'END:VCARD';
+            return { records: [{ recordType: 'mime', mediaType: 'text/vcard', data: enc(vc) }], summary: (f + ' ' + l).trim() };
+          },
+          phone() {
+            const v = val('wPhone');
+            if (!v) throw 'Enter a phone number';
+            return { records: [{ recordType: 'url', data: 'tel:' + v }], summary: v };
+          },
+          email() {
+            const v = val('wEmail');
+            if (!v) throw 'Enter an email';
+            let uri = 'mailto:' + v;
+            const s = val('wSubj');
+            if (s) uri += '?subject=' + encodeURIComponent(s);
+            return { records: [{ recordType: 'url', data: uri }], summary: v };
+          },
+          geo() {
+            const lat = val('gLat'), lng = val('gLng');
+            if (!lat || !lng) throw 'Enter coordinates';
+            return { records: [{ recordType: 'url', data: 'geo:' + lat + ',' + lng }], summary: lat + ', ' + lng };
+          }
+        };
+        const built = builders[type]();
+        records = built.records;
+        summary = built.summary;
+      } catch (msg) {
+        return showStatus('w', msg, 'warn');
       }
 
       const btn = document.getElementById('writeBtn');
       btn.disabled = true;
       btn.classList.add('scanning');
-      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/></svg> Hold tag near device...';
-      showWriteStatus('Ready to write. Hold an NFC tag near your device...', 'info', true);
+      btn.innerHTML = svgWave() + ' Hold tag near device…';
+      showStatus('w', 'Ready to write — bring a tag close', 'info', true);
 
       try {
         const writer = new NDEFReader();
         await writer.write({ records });
-
-        showWriteStatus('Written successfully!', 'success');
-        addHistory('write', type, [{ type: type.toUpperCase(), data: summary }]);
-      } catch (err) {
-        if (err.name === 'AbortError') {
-          showWriteStatus('Write cancelled.', 'warning');
-        } else {
-          showWriteStatus('Write failed: ' + err.message, 'error');
-        }
+        showStatus('w', 'Written successfully', 'ok');
+        addLog('write', type, null, summary);
+      } catch (e) {
+        showStatus('w', e.name === 'AbortError' ? 'Cancelled' : e.message, e.name === 'AbortError' ? 'warn' : 'err');
       } finally {
         btn.disabled = false;
         btn.classList.remove('scanning');
-        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Write to NFC Tag';
+        btn.innerHTML = svgPlus() + ' Write to Tag';
       }
     }
 
-    function showWriteStatus(msg, type, scanning_anim) {
-      const el = document.getElementById('writeStatus');
-      const textEl = document.getElementById('writeStatusText');
-      el.style.display = 'flex';
-      el.className = 'status-bar ' + type + (scanning_anim ? ' scanning' : '');
-      textEl.textContent = msg;
+    function addLog(action, id, message, summary) {
+      const recs = [];
+      if (message) {
+        for (const r of message.records) {
+          let d;
+          try { d = new TextDecoder(r.encoding || 'utf-8').decode(r.data); }
+          catch(_) { d = hexDump(r.data); }
+          recs.push({ type: r.recordType.toUpperCase(), data: d });
+        }
+      } else if (summary) {
+        recs.push({ type: id.toUpperCase(), data: summary });
+      }
+      hist.unshift({ action, id, records: recs, time: new Date().toISOString() });
+      if (hist.length > 50) hist.pop();
+      try { localStorage.setItem('mkblv_nfc', JSON.stringify(hist)); } catch(_){}
+      updateLogBadge();
+      renderLog();
     }
 
-    // History
-    function addHistory(action, id, records) {
-      const entry = {
-        action,
-        id,
-        records,
-        time: new Date().toISOString()
-      };
-      history.unshift(entry);
-      if (history.length > 50) history.pop();
-      try {
-        localStorage.setItem('mkblv_nfc_history', JSON.stringify(history));
-      } catch(_) {}
-      updateHistoryBadge();
-      renderHistory();
-    }
-
-    function renderHistory() {
-      const el = document.getElementById('historyList');
-      if (history.length === 0) {
-        el.innerHTML = `<div class="empty-state">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <p>No activity yet. Read or write an NFC tag to get started.</p>
-        </div>`;
+    function renderLog() {
+      const el = document.getElementById('logList');
+      if (!hist.length) {
+        el.innerHTML = '<div class="empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><p>No activity yet</p></div>';
         return;
       }
-
-      el.innerHTML = history.map((entry, i) => {
-        const isRead = entry.action === 'read';
-        const preview = entry.records && entry.records[0] ? entry.records[0].data : entry.id;
-        const timeStr = formatTime(entry.time);
-        return `<div class="history-item" onclick="showHistoryDetail(${i})">
-          <div class="history-icon ${isRead ? 'read' : 'write'}">${isRead ? 'R' : 'W'}</div>
-          <div class="history-details">
-            <div class="history-title">${escapeHtml(truncate(preview, 50))}</div>
-            <div class="history-time">${isRead ? 'Read' : 'Wrote ' + entry.id} &middot; ${timeStr}</div>
-          </div>
-        </div>`;
+      el.innerHTML = hist.map((e, i) => {
+        const isR = e.action === 'read';
+        const preview = e.records && e.records[0] ? e.records[0].data : e.id;
+        return '<div class="log-row" onclick="showLogDetail(' + i + ')">' +
+          '<div class="log-pip ' + (isR ? 'r' : 'w') + '">' + (isR ? 'R' : 'W') + '</div>' +
+          '<div class="log-body"><div class="log-title">' + esc(trunc(preview, 44)) + '</div>' +
+          '<div class="log-time">' + (isR ? 'Read' : 'Wrote ' + e.id) + ' · ' + fmtTime(e.time) + '</div></div></div>';
       }).join('');
     }
 
-    function showHistoryDetail(index) {
-      const entry = history[index];
-      if (!entry) return;
-      const resultsEl = document.getElementById('readResults');
-
+    function showLogDetail(i) {
+      const e = hist[i]; if (!e) return;
       let html = '';
-      if (entry.records) {
-        entry.records.forEach(r => {
-          let dataHtml = escapeHtml(r.data);
-          if (r.data && (r.data.startsWith('http://') || r.data.startsWith('https://'))) {
-            dataHtml = `<a href="${escapeHtml(r.data)}" target="_blank" rel="noopener">${escapeHtml(r.data)}</a>`;
-          }
-          html += `<div class="record">
-            <div class="record-type">${escapeHtml(r.type)}</div>
-            <div class="record-data">${dataHtml}</div>
-          </div>`;
-        });
-      }
-
-      resultsEl.innerHTML = html;
-
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      document.querySelector('[data-tab="read"]').classList.add('active');
-      document.getElementById('panelRead').classList.add('active');
+      (e.records || []).forEach(r => {
+        let dh = esc(r.data);
+        if (r.data && /^https?:/.test(r.data))
+          dh = '<a href="' + esc(r.data) + '" target="_blank" rel="noopener">' + esc(r.data) + '</a>';
+        html += '<div class="rec"><div class="rec-type">' + esc(r.type) + '</div><div class="rec-data">' + dh + '</div></div>';
+      });
+      document.getElementById('readOut').innerHTML = html;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+      document.querySelector('[data-t="read"]').classList.add('on');
+      document.getElementById('pRead').classList.add('on');
     }
 
-    function clearHistory() {
-      history = [];
-      try {
-        localStorage.removeItem('mkblv_nfc_history');
-      } catch(_) {}
-      updateHistoryBadge();
-      renderHistory();
+    function clearLog() {
+      hist = [];
+      try { localStorage.removeItem('mkblv_nfc'); } catch(_){}
+      updateLogBadge();
+      renderLog();
     }
 
-    function updateHistoryBadge() {
-      const badge = document.getElementById('historyBadge');
-      if (history.length > 0) {
-        badge.style.display = 'inline';
-        badge.textContent = history.length;
-      } else {
-        badge.style.display = 'none';
-      }
+    function updateLogBadge() {
+      const el = document.getElementById('logCt');
+      if (hist.length) { el.style.display = 'inline'; el.textContent = hist.length; }
+      else el.style.display = 'none';
     }
 
-    // Utils
-    function escapeHtml(str) {
-      if (!str) return '';
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
+    function showStatus(prefix, msg, type, pulse) {
+      const el = document.getElementById(prefix + 'Status');
+      const txt = document.getElementById(prefix + 'StatusTxt');
+      el.style.display = 'flex';
+      el.className = 'sbar ' + type + (pulse ? ' pulse' : '');
+      txt.textContent = msg;
     }
 
-    function truncate(str, max) {
-      if (!str) return '';
-      return str.length > max ? str.substring(0, max) + '...' : str;
+    function val(id) { return document.getElementById(id).value.trim(); }
+    function enc(s) { return new TextEncoder().encode(s); }
+    function esc(s) {
+      if (!s) return '';
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+    function trunc(s, n) { return (!s) ? '' : s.length > n ? s.slice(0, n) + '…' : s; }
+    function hexDump(d) {
+      const b = new Uint8Array(d.buffer || d);
+      return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join(' ');
+    }
+    function fmtTime(iso) {
+      try { return new Date(iso).toLocaleString(undefined, { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }); }
+      catch(_) { return iso; }
     }
 
-    function formatTime(iso) {
-      try {
-        const d = new Date(iso);
-        return d.toLocaleString(undefined, {
-          month: 'short', day: 'numeric',
-          hour: '2-digit', minute: '2-digit'
-        });
-      } catch(_) {
-        return iso;
-      }
+    function svgWave() {
+      return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/><path d="M12.91 4.1a16.07 16.07 0 0 1 0 15.8"/><path d="M16.37 2a20.4 20.4 0 0 1 0 20"/></svg>';
+    }
+    function svgStop() {
+      return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
+    }
+    function svgPlus() {
+      return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
     }
 
-    init();
+    if (!('NDEFReader' in window)) {
+      document.getElementById('compatBanner').style.display = 'block';
+      document.getElementById('scanBtn').disabled = true;
+      document.getElementById('writeBtn').disabled = true;
+    }
+    updateLogBadge();
+    renderLog();
   </script>
 </body>
 </html>
